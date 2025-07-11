@@ -1,6 +1,6 @@
 import React from 'react';
 import CardList from './card-list';
-import type { MainState } from '../types/types';
+import type { CharacterResult, MainState } from '../types/types';
 
 interface MainProps {
   searchValue: string;
@@ -12,6 +12,7 @@ class Main extends React.Component<MainProps, MainState> {
       items: [],
       loading: false,
       error: null,
+      throwError: false,
     };
   }
 
@@ -43,7 +44,9 @@ class Main extends React.Component<MainProps, MainState> {
           this.setState({ items: data.results, loading: false });
         } else {
           console.log(data.result);
-          const items = data.result.map((item: any) => item.properties);
+          const items = data.result.map(
+            (item: CharacterResult) => item.properties
+          );
           this.setState({ items, loading: false });
         }
       })
@@ -52,12 +55,20 @@ class Main extends React.Component<MainProps, MainState> {
       });
   };
 
+  handleThrowError = () => {
+    this.setState({ throwError: true });
+  };
+
   render() {
-    const { items, loading, error } = this.state;
+    const { items, loading, error, throwError } = this.state;
+    if (throwError) {
+      throw new Error('Test error from Main component');
+    }
     return (
       <main className="main">
         {loading && <div>Loading...</div>}
-        {error && <div>{error}</div>}
+        {error && <div className="error-message">{error}</div>}
+        <button onClick={this.handleThrowError}>Throw Error</button>
         <CardList items={items} />
       </main>
     );

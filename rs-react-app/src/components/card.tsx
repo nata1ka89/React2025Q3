@@ -1,7 +1,7 @@
 import React from 'react';
-import type { CardProps, DescriptionProps } from '../types/types';
+import type { DescriptionProps } from '../types/types';
 
-class Card extends React.Component<CardProps | DescriptionProps> {
+class Card extends React.Component<DescriptionProps> {
   render() {
     const { ...item } = this.props;
 
