@@ -2,19 +2,27 @@ import React from 'react';
 import CardList from './card-list';
 import type { MainState } from '../types/types';
 
-class Main extends React.Component<object, MainState> {
-  constructor(props: object) {
+interface MainProps {
+  searchValue: string;
+}
+class Main extends React.Component<MainProps, MainState> {
+  constructor(props: MainProps) {
     super(props);
     this.state = {
       items: [],
       loading: false,
       error: null,
-      searchValue: '',
     };
   }
 
   componentDidMount() {
     this.fetchData();
+  }
+
+  componentDidUpdate(prevProps: MainProps) {
+    if (prevProps.searchValue !== this.props.searchValue) {
+      this.fetchData(this.props.searchValue);
+    }
   }
 
   fetchData = (searchValue: string = '') => {
@@ -30,17 +38,18 @@ class Main extends React.Component<object, MainState> {
         return response.json();
       })
       .then((data) => {
-        console.log(data.results);
-        this.setState({ items: data.results, loading: false });
+        if (data.results) {
+          console.log(data.results);
+          this.setState({ items: data.results, loading: false });
+        } else {
+          console.log(data.result);
+          const items = data.result.map((item: any) => item.properties);
+          this.setState({ items, loading: false });
+        }
       })
       .catch((error) => {
         this.setState({ error: error.message, loading: false });
       });
-  };
-
-  handleSearch = (searchValue: string) => {
-    this.setState({ searchValue });
-    this.fetchData(searchValue);
   };
 
   render() {

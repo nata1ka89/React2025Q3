@@ -9,7 +9,7 @@ class CardList extends React.Component<CardListProps> {
     return (
       <div className="card-list">
         {items.map((item, index) => (
-          <Card key={index} name={item.name} url={item.url} />
+          <Card key={index} {...item} />
         ))}
       </div>
     );

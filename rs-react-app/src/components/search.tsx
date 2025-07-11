@@ -1,11 +1,14 @@
 import React from 'react';
 
+interface SearchProps {
+  onSearch: (searchValue: string) => void;
+}
 interface SearchState {
   searchValue: string;
 }
 
-class Search extends React.Component<object, SearchState> {
-  constructor(props: object) {
+class Search extends React.Component<SearchProps, SearchState> {
+  constructor(props: SearchProps) {
     super(props);
     this.state = { searchValue: localStorage.getItem('searchTerm') || '' };
   }
@@ -17,6 +20,7 @@ class Search extends React.Component<object, SearchState> {
   handleSearch = () => {
     const trimmedValue = this.state.searchValue.trim();
     localStorage.setItem('searchValue', trimmedValue);
+    this.props.onSearch(trimmedValue);
   };
   render() {
     return (
