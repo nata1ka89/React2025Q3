@@ -17,7 +17,8 @@ class Main extends React.Component<MainProps, MainState> {
   }
 
   componentDidMount() {
-    this.fetchData();
+    const savedSearchValue = localStorage.getItem('searchValue') || '';
+    this.fetchData(savedSearchValue);
   }
 
   componentDidUpdate(prevProps: MainProps) {

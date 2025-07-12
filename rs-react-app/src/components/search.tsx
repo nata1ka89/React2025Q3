@@ -10,7 +10,7 @@ interface SearchState {
 class Search extends React.Component<SearchProps, SearchState> {
   constructor(props: SearchProps) {
     super(props);
-    this.state = { searchValue: localStorage.getItem('searchTerm') || '' };
+    this.state = { searchValue: localStorage.getItem('searchValue') || '' };
   }
 
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
