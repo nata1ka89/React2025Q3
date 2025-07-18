@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { act } from 'react';
 import CardList from './card-list';
 import type { CharacterResult, MainState } from '../types/types';
 
@@ -40,19 +40,21 @@ class Main extends React.Component<MainProps, MainState> {
         return response.json();
       })
       .then((data) => {
-        if (data.results) {
-          console.log(data.results);
-          this.setState({ items: data.results, loading: false });
-        } else {
-          console.log(data.result);
-          const items = data.result.map(
-            (item: CharacterResult) => item.properties
-          );
-          this.setState({ items, loading: false });
-        }
+        act(() => {
+          if (data.results) {
+            this.setState({ items: data.results, loading: false });
+          } else {
+            const items = data.result.map(
+              (item: CharacterResult) => item.properties
+            );
+            this.setState({ items, loading: false });
+          }
+        });
       })
       .catch((error) => {
-        this.setState({ error: error.message, loading: false });
+        act(() => {
+          this.setState({ error: error.message, loading: false });
+        });
       });
   };
 
