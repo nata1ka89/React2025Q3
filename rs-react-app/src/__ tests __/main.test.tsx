@@ -1,4 +1,4 @@
-import { act, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Main from '../components/main';
 import { mockItems } from '../setupTests';
@@ -47,5 +47,8 @@ describe('Main Component', () => {
 
     const button = screen.getByText('Throw Error');
     expect(button).toBeInTheDocument();
+    expect(() => {
+      fireEvent.click(button);
+    }).toThrow('Test error from Main component');
   });
 });
