@@ -1,77 +1,67 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import CardList from './card-list';
-import type { CharacterResult, MainState } from '../types/types';
+import type { CharacterResult, DescriptionProps } from '../types/types';
 
 interface MainProps {
   searchValue: string;
 }
-class Main extends React.Component<MainProps, MainState> {
-  constructor(props: MainProps) {
-    super(props);
-    this.state = {
-      items: [],
-      loading: false,
-      error: null,
-      throwError: false,
-    };
-  }
 
-  componentDidMount() {
-    const savedSearchValue = localStorage.getItem('searchValue') || '';
-    this.fetchData(savedSearchValue);
-  }
+const Main: React.FC<MainProps> = ({ searchValue }) => {
+  const [items, setItems] = useState<DescriptionProps[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [throwError, setThrowError] = useState(false);
 
-  componentDidUpdate(prevProps: MainProps) {
-    if (prevProps.searchValue !== this.props.searchValue) {
-      this.fetchData(this.props.searchValue);
-    }
-  }
-
-  fetchData = (searchValue: string = '') => {
-    this.setState({ loading: true, error: null });
+  const fetchData = useCallback(async (searchValue: string = '') => {
+    setLoading(true);
+    setError(null);
     const url = searchValue
       ? `https://swapi.tech/api/people/?name=${searchValue}`
       : `https://swapi.tech/api/people`;
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.results) {
-          this.setState({ items: data.results, loading: false });
-        } else {
-          const items = data.result.map(
-            (item: CharacterResult) => item.properties
-          );
-          this.setState({ items, loading: false });
-        }
-      })
-      .catch((error) => {
-        this.setState({ error: error.message, loading: false });
-      });
-  };
 
-  handleThrowError = () => {
-    this.setState({ throwError: true });
-  };
-
-  render() {
-    const { items, loading, error, throwError } = this.state;
-    if (throwError) {
-      throw new Error('Test error from Main component');
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      const data = await response.json();
+      if (!data.results && !data.result) {
+        throw new Error('No data found');
+      }
+      if (data.results) {
+        setItems(data.results);
+      } else {
+        const items = data.result.map(
+          (item: CharacterResult) => item.properties
+        );
+        setItems(items);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message);
+      }
+    } finally {
+      setLoading(false);
     }
-    return (
-      <main className="main">
-        {loading && <div>Loading...</div>}
-        {error && <div className="error-message">{error}</div>}
-        <button onClick={this.handleThrowError}>Throw Error</button>
-        <CardList items={items} />
-      </main>
-    );
+  }, []);
+
+  useEffect(() => {
+    const valueToSearch =
+      searchValue || localStorage.getItem('searchValue') || '';
+    fetchData(valueToSearch);
+  }, [searchValue, fetchData]);
+
+  if (throwError) {
+    throw new Error('Test error from Main component');
   }
-}
+  return (
+    <main className="main">
+      {loading && <div>Loading...</div>}
+      {error && <div className="error-message">{error}</div>}
+      <button onClick={() => setThrowError(true)}>Throw Error</button>
+      <CardList items={items} />
+    </main>
+  );
+};
 
 export default Main;
