@@ -146,6 +146,8 @@ body {
 }
 
 .card {
+  cursor: pointer;
+
   padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -180,4 +182,34 @@ body {
   font-weight: bold;
   color: red;
   text-align: center;
+}
+
+.about {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.about p {
+  line-height: 1.5;
+  color: #555;
+}
+
+.navigation {
+  display: flex;
+  gap: 20px;
+}
+
+.navigation a,
+.about a {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fc0;
+  text-decoration: none;
+}
+
+.navigation a:hover,
+.about a:hover {
+  color: #e6b800;
 }
