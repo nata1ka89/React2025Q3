@@ -62,8 +62,26 @@ body {
   background-color: #fc0;
 }
 
-.main {
+.main .master-detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
   padding: 20px;
+}
+
+.main .master-detail-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.main .master {
+  padding-right: 20px;
+}
+
+.main .detail {
+  padding-left: 20px;
 }
 
 .error-message {
@@ -95,7 +113,8 @@ body {
   background-color: #e6b800;
 }
 
-.main .pagination button {
+.main .pagination button,
+.main .detail button {
   cursor: pointer;
 
   padding: 10px 20px;
@@ -109,13 +128,14 @@ body {
   background-color: #fc0;
 }
 
+.main .pagination button:hover,
+.main .detail button:hover {
+  background-color: #e6b800;
+}
+
 .main .pagination button:disabled {
   cursor: no-drop;
   background-color: #c7c7c4;
-}
-
-.main .pagination button:hover {
-  background-color: #e6b800;
 }
 
 .card-list {
