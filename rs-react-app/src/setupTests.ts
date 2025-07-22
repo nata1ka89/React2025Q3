@@ -1,4 +1,8 @@
 import '@testing-library/jest-dom';
+import { TextEncoder } from 'util';
+
+global.TextEncoder = TextEncoder;
+
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({ data: 'mocked data' }),

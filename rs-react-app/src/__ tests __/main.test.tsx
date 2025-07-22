@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Main from '../components/main';
 import { mockItems } from '../setupTests';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('Main Component', () => {
   beforeEach(() => {
@@ -22,7 +23,11 @@ describe('Main Component', () => {
 
   test('renders data from API', async () => {
     await act(async () => {
-      render(<Main searchValue="" />);
+      render(
+        <MemoryRouter>
+          <Main searchValue="" />
+        </MemoryRouter>
+      );
     });
 
     const items = screen.getAllByText(/Jettster|Vader/);
@@ -35,7 +40,11 @@ describe('Main Component', () => {
       .mockImplementation(() => Promise.reject(new Error('API Error')));
 
     await act(async () => {
-      render(<Main searchValue="" />);
+      render(
+        <MemoryRouter>
+          <Main searchValue="" />
+        </MemoryRouter>
+      );
     });
 
     const errorMessage = screen.getByText('API Error');
@@ -43,7 +52,11 @@ describe('Main Component', () => {
   });
 
   test('throws error when "Throw Error" button is clicked', () => {
-    render(<Main searchValue="" />);
+    render(
+      <MemoryRouter>
+        <Main searchValue="" />
+      </MemoryRouter>
+    );
 
     const button = screen.getByText('Throw Error');
     expect(button).toBeInTheDocument();
