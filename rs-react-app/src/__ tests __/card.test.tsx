@@ -8,7 +8,7 @@ describe('Card Component', () => {
     render(<Card {...mockItems[0]} />);
     expect(screen.getByText('Darth Vader')).toBeInTheDocument();
     expect(
-      screen.getByText('URL: https://www.swapi.tech/api/people/4')
+      screen.getByText('https://www.swapi.tech/api/people/4')
     ).toBeInTheDocument();
   });
 });
