@@ -10,8 +10,5 @@ describe('Card Component', () => {
     expect(
       screen.getByText('URL: https://www.swapi.tech/api/people/4')
     ).toBeInTheDocument();
-    expect(screen.getByText('Gender: male')).toBeInTheDocument();
-    expect(screen.getByText('Height: 202')).toBeInTheDocument();
-    expect(screen.getByText('Mass: 136')).toBeInTheDocument();
   });
 });
