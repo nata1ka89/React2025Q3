@@ -8,10 +8,10 @@ const Detail: React.FC<DetailProps> = ({ item, onClose }) => {
     <div className="detail">
       <button onClick={onClose}>Close</button>
       <h3>{item.name}</h3>
-      <p>
+      <p data-testid="gender">
         <strong>Gender:</strong> {item.gender}
       </p>
-      <p>
+      <p data-testid="height">
         <strong>Height:</strong> {item.height}
       </p>
       <p>
