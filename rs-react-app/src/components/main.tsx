@@ -1,88 +1,36 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CardList from './card-list';
 import type { DescriptionProps } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
 import Detail from './detail';
+import useFetchData from '../utils/useFetchData';
+import Pagination from './pagination';
+import useFetchDetails from '../utils/useFetchDetails';
 
 interface MainProps {
   searchValue: string;
 }
 
 const Main: React.FC<MainProps> = ({ searchValue }) => {
-  const [items, setItems] = useState<DescriptionProps[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [throwError, setThrowError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPage, setTotalPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState<DescriptionProps | null>(
     null
   );
-
   const [searchParams, setSearchParams] = useSearchParams();
-
   const itemsPerPage = 10;
-  const fetchData = useCallback(
-    async (searchValue: string = '', page: number = 1) => {
-      setLoading(true);
-      setError(null);
-      const url = searchValue
-        ? `https://swapi.tech/api/people/?name=${searchValue}&page=${page}&limit=${itemsPerPage}`
-        : `https://swapi.tech/api/people?page=${page}&limit=${itemsPerPage}`;
-
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        const data = await response.json();
-
-        if (!data.results && !data.result) {
-          throw new Error('No data found');
-        }
-        if (!searchValue) {
-          setItems(data.results);
-          setTotalPage(data.total_pages || 1);
-        } else {
-          const items = data.result.map(
-            (item: { properties: DescriptionProps }) => item.properties
-          );
-          setItems(items);
-          setTotalPage(Math.ceil(data.result.length / itemsPerPage));
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          setError(error.message);
-        }
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  const fetchDetails = async (url: string) => {
-    try {
-      setLoading(true);
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.result && data.result.properties) {
-        return data.result.properties;
-      } else {
-        throw new Error('No details found');
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setError(error.message);
-      }
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    items,
+    loading: dataLoading,
+    error: dataError,
+    totalPage,
+    fetchData,
+  } = useFetchData(itemsPerPage);
+  const {
+    loading: detailsLoading,
+    error: detailsError,
+    fetchDetails,
+  } = useFetchDetails();
 
   useEffect(() => {
     const valueToSearch =
@@ -133,23 +81,19 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
 
   return (
     <main className="main">
-      {loading && <div>Loading...</div>}
-      {error && <div className="error-message">{error}</div>}
+      {(dataLoading || detailsLoading) && <div>Loading...</div>}
+      {dataError && <div className="error-message">{dataError}</div>}
+      {detailsError && <div className="error-message">{detailsError}</div>}
       <button onClick={() => setThrowError(true)}>Throw Error</button>
       <div className={`master-detail${selectedItem ? '-split' : ''}`}>
         <div className="master">
           <CardList items={paginatedItems} onSelect={handleSelectItem} />
-          <div className="pagination">
-            <button onClick={handlePrevPage} disabled={currentPage === 1}>
-              Prev
-            </button>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPage}
-            >
-              Next
-            </button>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPage={totalPage}
+            onPrevPage={handlePrevPage}
+            onNextPage={handleNextPage}
+          ></Pagination>
         </div>
         {selectedItem && (
           <div className="detail">
