@@ -10,6 +10,7 @@ describe('Pagination Component', () => {
         totalPage={5}
         onPrevPage={jest.fn()}
         onNextPage={jest.fn()}
+        isDisabled={false}
       />
     );
 
@@ -24,6 +25,7 @@ describe('Pagination Component', () => {
         totalPage={5}
         onPrevPage={jest.fn()}
         onNextPage={jest.fn()}
+        isDisabled={false}
       />
     );
 
@@ -38,6 +40,7 @@ describe('Pagination Component', () => {
         totalPage={5}
         onPrevPage={jest.fn()}
         onNextPage={jest.fn()}
+        isDisabled={false}
       />
     );
 
@@ -54,6 +57,7 @@ describe('Pagination Component', () => {
         totalPage={5}
         onPrevPage={mockOnPrevPage}
         onNextPage={jest.fn()}
+        isDisabled={false}
       />
     );
 
@@ -72,6 +76,7 @@ describe('Pagination Component', () => {
         totalPage={5}
         onPrevPage={jest.fn()}
         onNextPage={mockOnNextPage}
+        isDisabled={false}
       />
     );
 

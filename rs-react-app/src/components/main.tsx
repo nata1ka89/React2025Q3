@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CardList from './card-list';
 import type { DescriptionProps } from '../types/types';
 import { useSearchParams } from 'react-router-dom';
@@ -30,13 +30,22 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
     error: detailsError,
     fetchDetails,
   } = useFetchDetails();
-
+  const prevSearchValue = useRef<string | null>(null);
+  const setSearchParamsRef = useRef(setSearchParams);
   useEffect(() => {
     const valueToSearch =
       searchValue || localStorage.getItem('searchValue') || '';
     const page = parseInt(searchParams.get('page') || '1', 10);
-
-    setCurrentPage(page);
+    if (searchParams.has('details')) {
+      return;
+    }
+    if (searchValue !== prevSearchValue.current) {
+      setCurrentPage(1);
+      setSearchParamsRef.current({ page: '1' });
+      prevSearchValue.current = searchValue;
+    } else {
+      setCurrentPage(page);
+    }
     fetchData(valueToSearch, page);
   }, [searchValue, fetchData, searchParams]);
 
@@ -74,9 +83,12 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
     ? items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
     : items;
 
+  if (dataLoading || detailsLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <main className="main">
-      {(dataLoading || detailsLoading) && <div>Loading...</div>}
       {dataError && <div className="error-message">{dataError}</div>}
       {detailsError && <div className="error-message">{detailsError}</div>}
       <div className={`master-detail${selectedItem ? '-split' : ''}`}>
@@ -87,6 +99,7 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
             totalPage={totalPage}
             onPrevPage={handlePrevPage}
             onNextPage={handleNextPage}
+            isDisabled={!!selectedItem}
           ></Pagination>
         </div>
         {selectedItem && (
