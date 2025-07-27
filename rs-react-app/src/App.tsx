@@ -1,35 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Header from './components/header';
 import Main from './components/main';
 import ErrorBoundary from './components/error-boundary ';
+import { Route, Routes } from 'react-router-dom';
+import About from './components/about';
+import NotFound from './components/not-found';
 
-interface AppState {
-  searchValue: string;
-}
-class App extends React.Component<object, AppState> {
-  constructor(props: object) {
-    super(props);
-    this.state = {
-      searchValue: '',
-    };
-  }
+const App: React.FC = () => {
+  const [searchValue, setSearchValue] = useState('');
 
-  handleSearch = (searchValue: string) => {
-    this.setState({ searchValue });
+  const handleSearch = (searchValue: string) => {
+    setSearchValue(searchValue);
   };
 
-  render() {
-    const { searchValue } = this.state;
-    return (
-      <ErrorBoundary>
-        <div className="container">
-          <Header onSearch={this.handleSearch} />
-          <Main searchValue={searchValue} />
-        </div>
-      </ErrorBoundary>
-    );
-  }
-}
+  return (
+    <ErrorBoundary>
+      <div className="container">
+        <Header onSearch={handleSearch} />
+        <Routes>
+          <Route path="/" element={<Main searchValue={searchValue} />} />
+          <Route path="/about" element={<About />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </div>
+    </ErrorBoundary>
+  );
+};
 
 export default App;

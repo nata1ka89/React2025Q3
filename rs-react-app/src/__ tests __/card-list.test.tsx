@@ -12,11 +12,23 @@ jest.mock('../components/card', () => {
 
 describe('CardList Component', () => {
   test('renders correct number of cards', () => {
-    render(<CardList items={mockItems} />);
+    const mockOnSelect = jest.fn();
+    render(<CardList items={mockItems} onSelect={mockOnSelect} />);
 
     const cards = screen.getAllByTestId('card');
     expect(cards).toHaveLength(2);
     expect(screen.getByText('Darth Vader')).toBeInTheDocument();
     expect(screen.getByText('Dexter Jettster')).toBeInTheDocument();
+  });
+
+  test('calls onSelect when a card is clicked', () => {
+    const mockOnSelect = jest.fn();
+    render(<CardList items={mockItems} onSelect={mockOnSelect} />);
+
+    const cards = screen.getAllByTestId('card');
+    cards[0].click();
+
+    expect(mockOnSelect).toHaveBeenCalledTimes(1);
+    expect(mockOnSelect).toHaveBeenCalledWith(mockItems[0]);
   });
 });

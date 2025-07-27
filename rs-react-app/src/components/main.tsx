@@ -1,77 +1,115 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CardList from './card-list';
-import type { CharacterResult, MainState } from '../types/types';
+import type { DescriptionProps } from '../types/types';
+import { useSearchParams } from 'react-router-dom';
+import Detail from './detail';
+import useFetchData from '../utils/useFetchData';
+import Pagination from './pagination';
+import useFetchDetails from '../utils/useFetchDetails';
 
 interface MainProps {
   searchValue: string;
 }
-class Main extends React.Component<MainProps, MainState> {
-  constructor(props: MainProps) {
-    super(props);
-    this.state = {
-      items: [],
-      loading: false,
-      error: null,
-      throwError: false,
-    };
-  }
 
-  componentDidMount() {
-    const savedSearchValue = localStorage.getItem('searchValue') || '';
-    this.fetchData(savedSearchValue);
-  }
-
-  componentDidUpdate(prevProps: MainProps) {
-    if (prevProps.searchValue !== this.props.searchValue) {
-      this.fetchData(this.props.searchValue);
+const Main: React.FC<MainProps> = ({ searchValue }) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState<DescriptionProps | null>(
+    null
+  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const itemsPerPage = 10;
+  const {
+    items,
+    loading: dataLoading,
+    error: dataError,
+    totalPage,
+    fetchData,
+  } = useFetchData(itemsPerPage);
+  const {
+    loading: detailsLoading,
+    error: detailsError,
+    fetchDetails,
+  } = useFetchDetails();
+  const prevSearchValue = useRef<string | null>(null);
+  const setSearchParamsRef = useRef(setSearchParams);
+  useEffect(() => {
+    const valueToSearch =
+      searchValue || localStorage.getItem('searchValue') || '';
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    if (searchParams.has('details')) {
+      return;
     }
-  }
+    if (searchValue !== prevSearchValue.current) {
+      setCurrentPage(1);
+      setSearchParamsRef.current({ page: '1' });
+      prevSearchValue.current = searchValue;
+    } else {
+      setCurrentPage(page);
+    }
+    fetchData(valueToSearch, page);
+  }, [searchValue, fetchData, searchParams]);
 
-  fetchData = (searchValue: string = '') => {
-    this.setState({ loading: true, error: null });
-    const url = searchValue
-      ? `https://swapi.tech/api/people/?name=${searchValue}`
-      : `https://swapi.tech/api/people`;
-    fetch(url)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data.results) {
-          this.setState({ items: data.results, loading: false });
-        } else {
-          const items = data.result.map(
-            (item: CharacterResult) => item.properties
-          );
-          this.setState({ items, loading: false });
-        }
-      })
-      .catch((error) => {
-        this.setState({ error: error.message, loading: false });
-      });
+  const handleNextPage = () => {
+    if (currentPage < totalPage) {
+      const nextPage = currentPage + 1;
+      setCurrentPage(nextPage);
+      setSearchParams({ page: nextPage.toString() });
+    }
   };
 
-  handleThrowError = () => {
-    this.setState({ throwError: true });
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      const prevPage = currentPage - 1;
+      setCurrentPage(prevPage);
+      setSearchParams({ page: prevPage.toString() });
+    }
   };
 
-  render() {
-    const { items, loading, error, throwError } = this.state;
-    if (throwError) {
-      throw new Error('Test error from Main component');
+  const handleSelectItem = async (item: DescriptionProps) => {
+    const detailsId = item.url.split('/').pop();
+    const details = await fetchDetails(item.url);
+    if (details) {
+      setSelectedItem(details);
     }
-    return (
-      <main className="main">
-        {loading && <div>Loading...</div>}
-        {error && <div className="error-message">{error}</div>}
-        <button onClick={this.handleThrowError}>Throw Error</button>
-        <CardList items={items} />
-      </main>
-    );
+    setSearchParams({ page: currentPage.toString(), details: detailsId || '' });
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedItem(null);
+    setSearchParams({ page: currentPage.toString() });
+  };
+
+  const paginatedItems = searchValue
+    ? items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+    : items;
+
+  if (dataLoading || detailsLoading) {
+    return <div>Loading...</div>;
   }
-}
+
+  return (
+    <main className="main">
+      {dataError && <div className="error-message">{dataError}</div>}
+      {detailsError && <div className="error-message">{detailsError}</div>}
+      <div className={`master-detail${selectedItem ? '-split' : ''}`}>
+        <div className="master">
+          <CardList items={paginatedItems} onSelect={handleSelectItem} />
+          <Pagination
+            currentPage={currentPage}
+            totalPage={totalPage}
+            onPrevPage={handlePrevPage}
+            onNextPage={handleNextPage}
+            isDisabled={!!selectedItem}
+          ></Pagination>
+        </div>
+        {selectedItem && (
+          <div className="detail">
+            <Detail item={selectedItem} onClose={handleCloseDetails} />
+          </div>
+        )}
+      </div>
+    </main>
+  );
+};
 
 export default Main;

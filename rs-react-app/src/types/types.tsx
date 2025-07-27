@@ -1,7 +1,7 @@
 export interface CharacterResult {
-  properties: DescriptionProps;
-  description: string;
   uid: string;
+  name: string;
+  url: string;
 }
 export interface DescriptionProps {
   name: string;
@@ -14,10 +14,17 @@ export interface DescriptionProps {
   mass?: string;
   homeworld?: string;
   birth_year?: string;
+  uid?: string;
 }
 
 export interface CardListProps {
   items: DescriptionProps[];
+  onSelect: (item: DescriptionProps) => void;
+}
+
+export interface DetailProps {
+  item: DescriptionProps | null;
+  onClose: () => void;
 }
 
 export interface MainState {
