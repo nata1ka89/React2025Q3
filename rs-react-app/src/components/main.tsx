@@ -12,7 +12,6 @@ interface MainProps {
 }
 
 const Main: React.FC<MainProps> = ({ searchValue }) => {
-  const [throwError, setThrowError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState<DescriptionProps | null>(
     null
@@ -40,10 +39,6 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
     setCurrentPage(page);
     fetchData(valueToSearch, page);
   }, [searchValue, fetchData, searchParams]);
-
-  if (throwError) {
-    throw new Error('Test error from Main component');
-  }
 
   const handleNextPage = () => {
     if (currentPage < totalPage) {
@@ -84,7 +79,6 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
       {(dataLoading || detailsLoading) && <div>Loading...</div>}
       {dataError && <div className="error-message">{dataError}</div>}
       {detailsError && <div className="error-message">{detailsError}</div>}
-      <button onClick={() => setThrowError(true)}>Throw Error</button>
       <div className={`master-detail${selectedItem ? '-split' : ''}`}>
         <div className="master">
           <CardList items={paginatedItems} onSelect={handleSelectItem} />
