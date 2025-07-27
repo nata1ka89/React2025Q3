@@ -24,7 +24,8 @@ body {
   background-color: #222;
 }
 
-.header h1 {
+.header h1,
+.not-found h1 {
   margin: 0;
   font-size: 24px;
 }
@@ -191,7 +192,8 @@ body {
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
-.about p {
+.about p,
+.not-found p {
   line-height: 1.5;
   color: #555;
 }
@@ -202,7 +204,8 @@ body {
 }
 
 .navigation a,
-.about a {
+.about a,
+.not-found a {
   font-size: 16px;
   font-weight: bold;
   color: #fc0;
@@ -210,6 +213,12 @@ body {
 }
 
 .navigation a:hover,
-.about a:hover {
+.about a:hover,
+.not-found a:hover {
   color: #e6b800;
+}
+
+.not-found {
+  padding: 50px;
+  text-align: center;
 }
