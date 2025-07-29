@@ -4,7 +4,7 @@ import App from '../App';
 import { MemoryRouter } from 'react-router-dom';
 
 describe('App Component', () => {
-  test('renders App without crashing', async () => {
+  test('render main part without crashing', async () => {
     await act(async () => {
       render(
         <MemoryRouter>
@@ -12,8 +12,15 @@ describe('App Component', () => {
         </MemoryRouter>
       );
     });
+
     const main = screen.getByRole('main');
     expect(main).toBeInTheDocument();
+  });
+
+  test('render banner without crashing', async () => {
+    await act(async () => {
+      render(<App />);
+    });
 
     const header = screen.getByRole('banner');
     expect(header).toBeInTheDocument();
