@@ -1,9 +1,11 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f4f4f4;
+
+  font-family: Arial, sans-serif;
   color: #333;
+
+  background-color: #f4f4f4;
 }
 
 .container {
@@ -13,11 +15,13 @@ body {
 }
 
 .header {
-  background-color: #222;
-  color: #fff;
   padding: 20px;
+  border-bottom: 4px solid #fc0;
+
+  color: #fff;
   text-align: center;
-  border-bottom: 4px solid #ffcc00;
+
+  background-color: #222;
 }
 
 .header h1 {
@@ -30,27 +34,27 @@ body {
 }
 
 .search input {
-  padding: 10px;
-  font-size: 16px;
   width: 300px;
+  margin-right: 10px;
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-right: 10px;
+
+  font-size: 16px;
 }
 
 .search button {
+  cursor: pointer;
+
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #ffcc00;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  color: #222;
-  font-weight: bold;
-}
 
-.search button:hover {
-  background-color: #e6b800;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+
+  background-color: #fc0;
 }
 
 .main {
@@ -58,25 +62,32 @@ body {
 }
 
 .error-message {
-  color: red;
-  font-weight: bold;
   margin: 10px 0;
+  font-weight: bold;
+  color: red;
 }
 
 .main button {
+  cursor: pointer;
+
+  margin-top: 20px;
   padding: 10px 20px;
-  font-size: 16px;
-  background-color: #ff4d4d;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
-  color: #fff;
+
+  font-size: 16px;
   font-weight: bold;
-  margin-top: 20px;
+  color: #fff;
+
+  background-color: #ff4d4d;
 }
 
 .main button:hover {
   background-color: #e60000;
+}
+
+.search button:hover {
+  background-color: #e6b800;
 }
 
 .card-list {
@@ -87,11 +98,13 @@ body {
 }
 
 .card {
-  background-color: #fff;
+  padding: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+
   transition:
     transform 0.2s,
     box-shadow 0.2s;
@@ -99,7 +112,7 @@ body {
 
 .card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
 }
 
 .card h3 {
@@ -115,8 +128,8 @@ body {
 }
 
 .error-boundary {
-  text-align: center;
-  color: red;
-  font-weight: bold;
   margin: 20px;
+  font-weight: bold;
+  color: red;
+  text-align: center;
 }

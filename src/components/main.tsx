@@ -41,10 +41,8 @@ class Main extends React.Component<MainProps, MainState> {
       })
       .then((data) => {
         if (data.results) {
-          console.log(data.results);
           this.setState({ items: data.results, loading: false });
         } else {
-          console.log(data.result);
           const items = data.result.map(
             (item: CharacterResult) => item.properties
           );
