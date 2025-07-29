@@ -19,7 +19,11 @@ describe('App Component', () => {
 
   test('render banner without crashing', async () => {
     await act(async () => {
-      render(<App />);
+      render(
+        <MemoryRouter>
+          <App />
+        </MemoryRouter>
+      );
     });
 
     const header = screen.getByRole('banner');

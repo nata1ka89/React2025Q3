@@ -5,6 +5,7 @@ import ErrorBoundary from './components/error-boundary ';
 import { Route, Routes } from 'react-router-dom';
 import About from './components/about';
 import NotFound from './components/not-found';
+import Detail from './components/detail';
 
 const App: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -18,7 +19,9 @@ const App: React.FC = () => {
       <div className="container">
         <Header onSearch={handleSearch} />
         <Routes>
-          <Route path="/" element={<Main searchValue={searchValue} />} />
+          <Route path="/" element={<Main searchValue={searchValue} />}>
+            <Route path="details/:id" element={<Detail />} />
+          </Route>
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,23 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import CardList from './card-list';
 import type { DescriptionProps } from '../types/types';
-import { useSearchParams } from 'react-router-dom';
-import Detail from './detail';
+import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import useFetchData from '../utils/useFetchData';
 import Pagination from './pagination';
-import useFetchDetails from '../utils/useFetchDetails';
+import useLocalStorage from '../utils/useLocalStorage';
 
 interface MainProps {
   searchValue: string;
 }
 
 const Main: React.FC<MainProps> = ({ searchValue }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedItem, setSelectedItem] = useState<DescriptionProps | null>(
-    null
-  );
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const [storedSearchValue] = useLocalStorage('searchValue');
   const itemsPerPage = 10;
+
   const {
     items,
     loading: dataLoading,
@@ -25,73 +24,53 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
     totalPage,
     fetchData,
   } = useFetchData(itemsPerPage);
-  const {
-    loading: detailsLoading,
-    error: detailsError,
-    fetchDetails,
-  } = useFetchDetails();
-  const prevSearchValue = useRef<string | null>(null);
-  const setSearchParamsRef = useRef(setSearchParams);
+
   useEffect(() => {
-    const valueToSearch =
-      searchValue || localStorage.getItem('searchValue') || '';
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    if (searchParams.has('details')) {
-      return;
-    }
-    if (searchValue !== prevSearchValue.current) {
-      setCurrentPage(1);
-      setSearchParamsRef.current({ page: '1' });
-      prevSearchValue.current = searchValue;
-    } else {
-      setCurrentPage(page);
-    }
-    fetchData(valueToSearch, page);
-  }, [searchValue, fetchData, searchParams]);
+    const valueToSearch = searchValue || storedSearchValue;
+    const currentPage = parseInt(searchParams.get('page') || '1', 10);
+    fetchData(valueToSearch, currentPage);
+  }, [searchValue, fetchData, currentPage, storedSearchValue, searchParams]);
 
   const handleNextPage = () => {
     if (currentPage < totalPage) {
       const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      setSearchParams({ page: nextPage.toString() });
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set('page', nextPage.toString());
+      setSearchParams(newParams);
     }
   };
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
       const prevPage = currentPage - 1;
-      setCurrentPage(prevPage);
-      setSearchParams({ page: prevPage.toString() });
+      const newParams = new URLSearchParams(searchParams.toString());
+      newParams.set('page', prevPage.toString());
+      setSearchParams(newParams);
     }
   };
 
   const handleSelectItem = async (item: DescriptionProps) => {
     const detailsId = item.url.split('/').pop();
-    const details = await fetchDetails(item.url);
-    if (details) {
-      setSelectedItem(details);
-    }
-    setSearchParams({ page: currentPage.toString(), details: detailsId || '' });
-  };
-
-  const handleCloseDetails = () => {
-    setSelectedItem(null);
-    setSearchParams({ page: currentPage.toString() });
+    const currentPage = searchParams.get('page') || '1';
+    navigate(`/details/${detailsId}?page=${currentPage}`);
   };
 
   const paginatedItems = searchValue
     ? items.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
     : items;
 
-  if (dataLoading || detailsLoading) {
+  if (dataLoading) {
     return <div>Loading...</div>;
   }
-
+  const isDetailVisible =
+    searchParams.get('details') ||
+    window.location.pathname.includes('/details/');
   return (
     <main className="main">
       {dataError && <div className="error-message">{dataError}</div>}
-      {detailsError && <div className="error-message">{detailsError}</div>}
-      <div className={`master-detail${selectedItem ? '-split' : ''}`}>
+      <div
+        className={isDetailVisible ? 'master-detail-split' : 'master-detail'}
+      >
         <div className="master">
           <CardList items={paginatedItems} onSelect={handleSelectItem} />
           <Pagination
@@ -99,14 +78,9 @@ const Main: React.FC<MainProps> = ({ searchValue }) => {
             totalPage={totalPage}
             onPrevPage={handlePrevPage}
             onNextPage={handleNextPage}
-            isDisabled={!!selectedItem}
           ></Pagination>
         </div>
-        {selectedItem && (
-          <div className="detail">
-            <Detail item={selectedItem} onClose={handleCloseDetails} />
-          </div>
-        )}
+        <Outlet />
       </div>
     </main>
   );

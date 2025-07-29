@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 export default function useLocalStorage(key: string) {
   const [storedValue, setStoredValue] = useState(() => {
-    return localStorage.getItem('searchValue') || '';
+    return localStorage.getItem(key) || '';
   });
 
   const setValue = (value: string) => {

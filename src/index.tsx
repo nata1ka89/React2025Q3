@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
-    <BrowserRouter basename="/React2025Q3/rs-react-app/">
+    <BrowserRouter basename="/React2025Q3/">
       <App />
     </BrowserRouter>
   </StrictMode>

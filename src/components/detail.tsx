@@ -1,12 +1,33 @@
-import React from 'react';
-import type { DetailProps } from '../types/types';
+import React, { useEffect } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
+import useFetchDetails from '../utils/useFetchDetails';
 
-const Detail: React.FC<DetailProps> = ({ item, onClose }) => {
-  if (!item) return null;
+const Detail: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { item, loading, error, fetchDetails } = useFetchDetails();
+  useEffect(() => {
+    if (id) {
+      fetchDetails(id);
+    }
+  }, [id, fetchDetails]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!item) {
+    return <div>No details found</div>;
+  }
+  const currentPage = searchParams.get('page') || '1';
   return (
     <div className="detail">
-      <button onClick={onClose}>Close</button>
+      <button onClick={() => navigate(`/?page=${currentPage}`)}>Close</button>
       <h3>{item.name}</h3>
       <p data-testid="gender">
         <strong>Gender:</strong> {item.gender}
