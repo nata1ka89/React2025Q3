@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import Header from './components/header';
 import Main from './components/main';
 import ErrorBoundary from './components/error-boundary ';
